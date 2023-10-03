@@ -88,8 +88,10 @@ def get_temp():
             except KeyError:
                 pass
 
-    results = [f'City: {item[0]}, temperature {item[1]} degrees Celsisus, date {item[2]}' for item in conn.execute(
+    results = [f'City: {item[0]}. temperature {item[1]} degrees Celsius. date {item[2]}' for item in conn.execute(
         'SELECT city, temperature, date FROM input').fetchall()][-5:]
+
+    results.reverse()
 
     if temperature:
         return render_template('app.html', city=city, temperature=temperature, results=results, username=username, previous=True, result=True, not_city=False)
