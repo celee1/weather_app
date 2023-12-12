@@ -72,16 +72,31 @@ def get_temp():
     username = request.form.get('username')
     temperature = False
 
-    favourites = [favourite[0] for favourite in conn.execute(
+    favorites = [favourite[0] for favourite in conn.execute(
         'SELECT * FROM favourite_locations').fetchall()]
 
     if city != None:
         if city != '':
+
             complete_url = base_url + "appid=" + \
                 api_key + "&q=" + city
+
+            favorites_url = [base_url + 'appid=' + api_key +
+                             '&q=' + favorite for favorite in favorites]
+
             try:
+                favourite_list = []
+
+                for favorite in favorites:
+                    temperature = round(float(requests.get(complete_url).json()
+                                              ['main']['temp']) - 273.15, 2)  # popravit
+                    favourite_list.append([favorite, temperature])
+
                 temperature = round(float(requests.get(complete_url).json()
                                           ['main']['temp']) - 273.15, 2)
+
+                print(favourite_list)
+
                 n_of_rows = len(conn.execute(
                     'SELECT * FROM input').fetchall())
                 date = datetime.now().strftime("%Y/%m/%d, %H:%M:%S")
