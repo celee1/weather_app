@@ -72,6 +72,9 @@ def get_temp():
     username = request.form.get('username')
     temperature = False
 
+    favourites = [favourite[0] for favourite in conn.execute(
+        'SELECT * FROM favourite_locations').fetchall()]
+
     if city != None:
         if city != '':
             complete_url = base_url + "appid=" + \
