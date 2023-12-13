@@ -85,17 +85,15 @@ def get_temp():
                              '&q=' + favorite for favorite in favorites]
 
             try:
-                favourite_list = []
+                favorite_list = []
 
-                for favorite in favorites:
-                    temperature = round(float(requests.get(complete_url).json()
+                for favorite in favorites_url:
+                    temperature = round(float(requests.get(favorite).json()
                                               ['main']['temp']) - 273.15, 2)  # popravit
-                    favourite_list.append([favorite, temperature])
+                    favorite_list.append([favorite, temperature])
 
                 temperature = round(float(requests.get(complete_url).json()
                                           ['main']['temp']) - 273.15, 2)
-
-                print(favourite_list)
 
                 n_of_rows = len(conn.execute(
                     'SELECT * FROM input').fetchall())
@@ -112,7 +110,7 @@ def get_temp():
     results.reverse()
 
     if temperature:
-        return render_template('app.html', city=city, temperature=temperature, results=results, username=username, previous=True, result=True, not_city=False)
+        return render_template('app.html', city=city, temperature=temperature, results=results, username=username, previous=True, result=True, not_city=False, favorites=favorite_list)
     return render_template('app.html', city=city, results=results, username=username, previous=True, result=False, not_city=True)
 
 
