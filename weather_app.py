@@ -106,7 +106,7 @@ def get_temp():
             except KeyError:
                 pass
 
-    results = [f'City: {item[0]}. temperature {item[1]} degrees Celsius. date {item[2]}' for item in conn.execute(
+    results = [f'{item[0]}. {item[1]} degrees Celsius. {item[2]}' for item in conn.execute(
         'SELECT city, temperature, date FROM input').fetchall()][-5:]
 
     results.reverse()
