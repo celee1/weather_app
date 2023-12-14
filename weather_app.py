@@ -87,10 +87,12 @@ def get_temp():
             try:
                 favorite_list = []
 
-                for favorite in favorites_url:
-                    temperature = round(float(requests.get(favorite).json()
+                for i in range(len(favorites_url)):
+                    temperature = round(float(requests.get(favorites_url[i]).json()
                                               ['main']['temp']) - 273.15, 2)  # popravit
-                    favorite_list.append([favorite, temperature])
+                    favorite_list.append([favorites[i], temperature])
+
+                print(favorite_list)
 
                 temperature = round(float(requests.get(complete_url).json()
                                           ['main']['temp']) - 273.15, 2)
