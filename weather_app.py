@@ -89,10 +89,8 @@ def get_temp():
 
                 for i in range(len(favorites_url)):
                     temperature = round(float(requests.get(favorites_url[i]).json()
-                                              ['main']['temp']) - 273.15, 2)  # popravit
+                                              ['main']['temp']) - 273.15, 2)
                     favorite_list.append([favorites[i], temperature])
-
-                print(favorite_list)
 
                 temperature = round(float(requests.get(complete_url).json()
                                           ['main']['temp']) - 273.15, 2)
@@ -114,6 +112,11 @@ def get_temp():
     if temperature:
         return render_template('app.html', city=city, temperature=temperature, results=results, username=username, previous=True, result=True, not_city=False, favorites=favorite_list)
     return render_template('app.html', city=city, results=results, username=username, previous=True, result=False, not_city=True)
+
+
+@ app.route('/app/manage', methods=['POST'])
+def manage_app():
+    return render_template('manage.html')
 
 
 if __name__ == '__main__':
