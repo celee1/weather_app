@@ -116,6 +116,10 @@ def get_temp():
 
 @ app.route('/app/manage', methods=['POST'])
 def manage_app():
+    username = request.form.get('username')
+    conn = get_db_connection()
+    query = conn.execute(
+        'SELECT * FROM favorite_locations').fetchall()  # dodat username
     return render_template('manage.html')
 
 
