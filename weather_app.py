@@ -73,7 +73,7 @@ def get_temp():
     temperature = False
 
     favorites = [favourite[0] for favourite in conn.execute(
-        'SELECT * FROM favourite_locations').fetchall()]
+        'SELECT * FROM favorite_locations').fetchall()]
 
     if city != None:
         if city != '':
@@ -118,9 +118,14 @@ def get_temp():
 def manage_app():
     username = request.form.get('username')
     conn = get_db_connection()
-    query = conn.execute(
-        'SELECT * FROM favorite_locations').fetchall()  # dodat username
-    return render_template('manage.html')
+    query = [favorite[0] for favorite in conn.execute(
+        f'SELECT location FROM favorite_locations WHERE username = "{username}"').fetchall()]
+    return render_template('manage.html', favorites=query)
+
+# u manage jos dodat:
+# link za nazad u app
+# svaka lokacija ima svoj link za uklonit tu lokaciju -> for loop + div s lokacijom i inputom za izbrisat? Input u sebi ima
+# lokaciju koja se onda izbrise iz tablice i ponovo se ucita stranica bez te lokacije
 
 
 if __name__ == '__main__':
