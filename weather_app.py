@@ -117,10 +117,16 @@ def get_temp():
 @ app.route('/app/manage', methods=['POST'])
 def manage_app():
     username = request.form.get('username')
+    print(username)
+    favorite = request.form.get('favorite')
+    print(favorite)
     conn = get_db_connection()
-    query = [favorite[0] for favorite in conn.execute(
+    if favorite:
+        query = conn.execute(
+            f'DELETE FROM favorite_locations WHERE username = "{username}" AND location = "{favorite}";')
+    favorites = [favorite[0] for favorite in conn.execute(
         f'SELECT location FROM favorite_locations WHERE username = "{username}"').fetchall()]
-    return render_template('manage.html', favorites=query)
+    return render_template('manage.html', favorites=favorites, username=username)
 
 # u manage jos dodat:
 # link za nazad u app
