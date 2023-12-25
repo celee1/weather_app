@@ -30,7 +30,7 @@ def login():
         f'SELECT * FROM user WHERE user = "{username}"').fetchall()
     if user_exists:
         if user_exists[0][1] == password:
-            return render_template('app.html', username=username, previous=False, result=False, not_city=False)
+            return render_template('app.html', username=username, previous=False, result=False, not_city=False, welcome=True)
     return render_template('login.html', failed=True)
 
 
@@ -58,9 +58,10 @@ def check():
         return render_template('register.html', username=username, password=password, register=True, checked=False, fill=True, success=False)
 
 
-@ app.route('/app', methods=['POST'])
+@ app.route('/app', methods=['GET', 'POST'])
 def get_app():
-    return render_template('app.html', username=request.form.get('username'), result=False, not_city=False, previous=False)
+    username = request.form.get('username')
+    return render_template('app.html', username=username, result=False, not_city=False, previous=False, welcome=request.form.get('welcome'), welcome_back=request.form.get('back'))
 
 
 @ app.route('/app/temperature', methods=['POST'])
@@ -73,7 +74,11 @@ def get_temp():
     temperature = False
 
     favorites = [favourite[0] for favourite in conn.execute(
-        'SELECT * FROM favorite_locations').fetchall()]
+        f'SELECT * FROM favorite_locations WHERE username = "{username}"').fetchall()]
+
+    for i in range(len(favorites)):
+        if '_' in favorites[i]:
+            favorites[i] = favorites[i].replace('_', ' ')
 
     if city != None:
         if city != '':
@@ -110,28 +115,26 @@ def get_temp():
     results.reverse()
 
     if temperature:
-        return render_template('app.html', city=city, temperature=temperature, results=results, username=username, previous=True, result=True, not_city=False, favorites=favorite_list)
-    return render_template('app.html', city=city, results=results, username=username, previous=True, result=False, not_city=True)
+        return render_template('app.html', city=city, temperature=temperature, results=results, username=username, previous=True, result=True, not_city=False, favorites=favorite_list, welcome=False)
+    return render_template('app.html', city=city, results=results, username=username, previous=True, result=False, not_city=True, welcome=False)
 
 
 @ app.route('/app/manage', methods=['POST'])
 def manage_app():
     username = request.form.get('username')
-    print(username)
     favorite = request.form.get('favorite')
-    print(favorite)
     conn = get_db_connection()
     if favorite:
-        query = conn.execute(
+        conn.execute(
             f'DELETE FROM favorite_locations WHERE username = "{username}" AND location = "{favorite}";')
+        conn.commit()
     favorites = [favorite[0] for favorite in conn.execute(
         f'SELECT location FROM favorite_locations WHERE username = "{username}"').fetchall()]
     return render_template('manage.html', favorites=favorites, username=username)
 
 # u manage jos dodat:
-# link za nazad u app
-# svaka lokacija ima svoj link za uklonit tu lokaciju -> for loop + div s lokacijom i inputom za izbrisat? Input u sebi ima
-# lokaciju koja se onda izbrise iz tablice i ponovo se ucita stranica bez te lokacije
+# mogucnost dodavanja lokacije u favorite
+# ogranicit broj favorita na 5?
 
 
 if __name__ == '__main__':
