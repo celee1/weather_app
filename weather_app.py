@@ -61,6 +61,13 @@ def check():
 @ app.route('/app', methods=['GET', 'POST'])
 def get_app():
     username = request.form.get('username')
+    fav = request.form.get('favorite')
+    city = request.form.get('city')
+    if fav:
+        conn = get_db_connection()
+        conn.execute(
+            f'INSERT INTO favorite_locations VALUES ("{city}", "{username}")')
+        conn.commit()
     return render_template('app.html', username=username, result=False, not_city=False, previous=False, welcome=request.form.get('welcome'), welcome_back=request.form.get('back'))
 
 
