@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='styles/main.css') }}">
+</head>
+
+<div class="center back_div"></div>
+{% for favorite in favorites %}
+<div class="center">
+    <p>{{favorite}}</p>
+    <br>
+    <form method="POST" action="/app/manage" style="display: inline;">
+        <input type="submit" value="Remove a favorite">
+        <input type="hidden" value={{username}} name="username">
+        <input type="hidden" value={{favorite}} name="favorite">
+    </form>
+</div>
+
+{% endfor %}
+
+<div class='center back_div'>
+    <form method="POST" action="/app" style="display: inline;">
+        <input type="submit" value="Back to the app">
+        <input type="hidden" value={{username}} name="username">
+        <input type="hidden" value="True" name="back">
+    </form>
+</div>

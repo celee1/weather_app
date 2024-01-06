@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='styles/main.css') }}">
+</head>
+
+<body>
+    {% if welcome %}
+    <h2>Welcome {{username.title()}}</h2>
+    {% endif %}
+    {% if welcome_back %}
+    <h2>Welcome Back {{username.title()}}</h2>
+    {% endif %}
+    <div class="center" id="search_bar">
+        <form method="POST" action="/app/temperature" style="display: inline">
+            <input type="text" placeholder="City" name="city" value="Trpanj">
+            <input type="submit" value="Get temperature">
+            <input type="hidden" value={{username}} name="username">
+        </form>
+        <form method="GET" action="/" style="display: inline;">
+            <input type="submit" value="Log out">
+        </form>
+    </div>
+    {% if result %}
+    <div class="center" id="city">
+        {% if result %}
+        <p>{{ city.upper() }}: {{ temperature }} °C</p>
+        <form method="POST" action="/app" style="display: inline;">
+            <input type="submit" value="Add to favorites">
+            <input type="hidden" value={{username}} name="username">
+            <input type="hidden" value={{city}} name="city">
+            <input type="hidden" value="fav" name="favorite">
+        </form>
+        {% endif %}
+        {% if empty %}
+        <p>Please enter a city name</p>
+        {% endif %}
+        {% if not_city %}
+        <p>City {{ city }} not found</p>
+        {% endif %}
+    </div>
+    <div class="center">
+
+        <div class="center" id="prev_fav">
+
+            <h1>Favourite locations</h1>
+            <ul>
+                {% for favorite in favorites %}
+                <li>{{favorite[0]}}, {{favorite[1]}} °C</li>
+            </ul>
+            {% endfor %}
+
+            <form method="POST" action="/app/manage" style="display: inline;">
+                <input type="submit" value="Manage favorites">
+                <input type="hidden" value={{username}} name="username">
+            </form>
+
+        </div>
+
+        <div class="center" id="prev_fav">
+            {% if previous%}
+            <ul>
+                <h1>Previous searches</h1>
+                {% for result in results %}
+                <li>{{ result }}</li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+
+</body>
+
+</html>
