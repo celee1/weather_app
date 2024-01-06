@@ -3,8 +3,8 @@ from flask_restful import Api
 from datetime import datetime
 import requests
 import sqlite3
+from sqlite3 import IntegrityError
 from info import key, db_path
-
 
 def get_db_connection():
     conn = sqlite3.connect(db_path)
@@ -65,9 +65,12 @@ def get_app():
     city = request.form.get('city')
     if fav:
         conn = get_db_connection()
-        conn.execute(
-            f'INSERT INTO favorite_locations VALUES ("{city}", "{username}")')
-        conn.commit()
+        try:
+            conn.execute(
+                f'INSERT INTO favorite_locations VALUES ("{city}", "{username}")')
+            conn.commit()
+        except IntegrityError:
+            pass
     return render_template('app.html', username=username, result=False, not_city=False, previous=False, welcome=request.form.get('welcome'), welcome_back=request.form.get('back'))
 
 
@@ -139,9 +142,6 @@ def manage_app():
         f'SELECT location FROM favorite_locations WHERE username = "{username}"').fetchall()]
     return render_template('manage.html', favorites=favorites, username=username)
 
-# u manage jos dodat:
-# mogucnost dodavanja lokacije u favorite
-# ogranicit broj favorita na 5?
 
 
 if __name__ == '__main__':
