@@ -3,7 +3,6 @@ from flask_restful import Api
 from datetime import datetime
 import requests
 import sqlite3
-from sqlite3 import IntegrityError
 from info import key, db_path
 
 def get_db_connection():
@@ -61,17 +60,8 @@ def check():
 @ app.route('/app', methods=['GET', 'POST'])
 def get_app():
     username = request.form.get('username')
-    fav = request.form.get('favorite')
-    city = request.form.get('city')
-    if fav:
-        conn = get_db_connection()
-        try:
-            conn.execute(
-                f'INSERT INTO favorite_locations VALUES ("{city}", "{username}")')
-            conn.commit()
-        except IntegrityError:
-            pass
-    return render_template('app.html', username=username, result=False, not_city=False, previous=False, welcome=request.form.get('welcome'), welcome_back=request.form.get('back'))
+        
+    return render_template('app.html', username=username, result=False, not_city=False, previous=False, welcome=request.form.get('welcome'))
 
 
 @ app.route('/app/temperature', methods=['POST'])
@@ -82,6 +72,14 @@ def get_temp():
     city = request.form.get('city')
     username = request.form.get('username')
     temperature = False
+
+    fav = request.form.get('favorite')   
+    if fav:
+        loc = [item[0] for item in conn.execute(f'SELECT location FROM favorite_locations WHERE username = "{username}" AND location = "{city}"').fetchall()]
+        if len(loc) == 0:
+            conn.execute(
+                f'INSERT INTO favorite_locations VALUES ("{city}", "{username}")')
+            conn.commit()
 
     favorites = [favourite[0] for favourite in conn.execute(
         f'SELECT * FROM favorite_locations WHERE username = "{username}"').fetchall()]
@@ -113,8 +111,9 @@ def get_temp():
                 n_of_rows = len(conn.execute(
                     'SELECT * FROM input').fetchall())
                 date = datetime.now().strftime("%Y/%m/%d, %H:%M:%S")
-                conn.execute(
-                    f'INSERT INTO input VALUES ("{n_of_rows}", "{city}", "{temperature}", "{username}", "{date}")')
+                if not fav:
+                    conn.execute(
+                        f'INSERT INTO input VALUES ("{n_of_rows}", "{city}", "{temperature}", "{username}", "{date}")')
                 conn.commit()
             except KeyError:
                 pass
